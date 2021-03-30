@@ -1,23 +1,11 @@
-
 import glob
-import os
 
 import cv2
-import face_recognition
 import numpy as np
 from embbedding import Embedding
 from faceNet import FaceNet
-from imutils.video import FPS, VideoStream
-from matplotlib import pyplot as plt
-from numpy import asarray, expand_dims, load, savez_compressed
-from PIL import Image
+from imutils.video import FPS
 from scipy.spatial import distance
-from sklearn.metrics import accuracy_score
-from sklearn.neighbors import KNeighborsClassifier as knn
-from sklearn.preprocessing import LabelEncoder, Normalizer
-from sklearn.svm import SVC
-from sklearn.utils import shuffle
-from tensorflow.keras.models import load_model
 from videoAccelerate import *
 
 train_path = glob.glob(r"facedetect/dataset/boss")
@@ -41,31 +29,29 @@ class Solution():
         self.known_faces, self.label = self.data['arr_0'], self.data['arr_1']
         pass
 
-    def l2_normalize(self, x, axis=-1, epsilon=1e-10):
-        output = x / \
-            np.sqrt(np.maximum(
-                np.sum(np.square(x), axis=axis, keepdims=True), epsilon))
-        return output
-
     def run(self, source=0):
         print("[INFO] starting video stream...")
 
         # stream = cv2.VideoCapture(source)
         vid_get = VideoGet(source).start()
         fps = FPS().start()
-        distances = []
+
         while True:
             frame = vid_get.frame
             grab = vid_get.grabbed
+            distances = []
             if grab:
                 frame_with_box, faces, locs = self.model.detector(
                     frame, crop_scale=0.05)
+                for face in faces:
+                    face = cv2.resize(face, (160, 160))
                 encode_frame = self.emb.calc_emb_test(faces)
 
                 for each_face in encode_frame:
                     each_face = each_face.reshape(-1)
                     for each_known in self.known_faces:
-                        distances.append(np.min(distance.euclidean(each_face, each_known)))
+                        distances.append(
+                            np.min(distance.euclidean(each_face, each_known)))
                 label = ""
                 if len(faces) != 0:
                     if np.min(distances) > 2.0:
@@ -73,7 +59,10 @@ class Solution():
                     else:
                         label = "Boss"
                     # show the output frame
-                    frame_with_box = cv2.putText(frame_with_box, label, (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0))
+                    frame_with_box = cv2.putText(frame_with_box, label,
+                                                 (0, 20),
+                                                 cv2.FONT_HERSHEY_SIMPLEX, 2,
+                                                 (255, 0, 0))
                 cv2.imshow("Frame", frame_with_box)
                 fps.update()
 

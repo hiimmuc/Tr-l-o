@@ -94,11 +94,11 @@ class Embedding():
     def calc_emb_test(self, faces):
         pd = []
         for face in faces:
-            face = cv2.resize(face, (160, 160))
             pd.append(self.embedding(face))
-        #embs = l2_normalize(np.concatenate(pd))
+        # embs = l2_normalize(np.concatenate(pd))
         embs = np.array(pd)
         return np.array(embs)
+
 
 # model_path = r'keras-facenet/model/facenet_keras.h5'
 # weight_path = r"keras-facenet/weights/facenet_keras_weights.h5"
