@@ -12,7 +12,8 @@ class ArduinoConfig():
 
         self.iteration = pyfirmata.util.Iterator(self.board)
         self.iteration.start()
-        self.terminal = serial.Serial(com, baudrate=9600)
+        # self.terminal = serial.Serial(com, baudrate=9600)
+        self.terminal = ''
         self.port = {
             'input': {
                 'thermal': [1, self.board.get_pin('a:1:i')],
@@ -30,8 +31,8 @@ class ArduinoConfig():
             }
         }
 
-    def get_data_port(self, type):
-        pipeline = self.port['input'][type][1]
+    def get_data_port(self, about):
+        pipeline = self.port['input'][about][1]
         value = pipeline.read()
         return value if value is not None else 0
 
@@ -39,6 +40,7 @@ class ArduinoConfig():
         data = self.terminal.readline()
         decode_data = str(data.decode("utf-8"))
         values = decode_data.split(' ')
+        values = list(lambda: float(x) for x in values)
         return values
 
     def transfer_data_port(self, type, data):
