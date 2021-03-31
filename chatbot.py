@@ -1,4 +1,3 @@
-O# from gtts import gTTS
 import os
 import random
 import time
@@ -8,21 +7,26 @@ import pyttsx3
 import requests
 import speech_recognition
 import wikipedia
+from arduinoConfig import ArduinoConfig
 from google_trans_new import google_translator as Translator  # noqa: H306
 from googlesearch import search
 from requests.api import get  # noqa: F401
 
-path = r"F:\Tài Liệu Học\Machine Learning\code"
+# from gtts import gTTS
+com_path = "COM6"
+myArduino = ArduinoConfig(com_path)
+
+path = r"backup"
 path = os.path.join(path, "audio.mp3")
 
 data = {
     "research": ["tìm thông tin", "hỏi"],
-    "search": ["tìm kiếm", "kiểm tra", "google", "gu gồ", "tra cứu",
-               "tra"],  # noqa: E501
+    "search": ["tìm kiếm", "kiểm tra", "google", "gu gồ", "tra cứu", "tra"],
     "check": ["ngày", "giờ", "thời tiết"],
     "greet": ["xin chào", "hello", "hi", "hai"],
     "action": ["play music", "chơi nhạc", "nhạc", "trình duyệt"],
-    "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"]
+    "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"],
+    "order": ["bật", "tắt"]
 }
 running = True
 robot_speak = pyttsx3.init()
@@ -89,7 +93,7 @@ def convert_languages(txt, src='vi', dest='en'):
 
 def weather(city_name):
     api = "330ff11e86b5ccbeba0a2f71aab88014"
-    url = f"http://api.openweathermap.org/data/2.5/weather?appid={api}&q={city_name}"  # noqa: E501
+    url = f"http://api.openweathermap.org/data/2.5/weather?appid={api}&q={city_name}"
     response = requests.get(url)
     data = response.json()
     city_name = convert_languages(city_name, 'vi', 'en').replace(' ',
@@ -147,8 +151,8 @@ while running:
     input_message = ""  # chua noi gi
     robot_say("I'm listening")
     print("\nFriday: I'm listening....")
-    input_message, some_text = get_text()
-    input_message = input_message if some_text else thinking
+    input_message, understand = get_text()
+    input_message = input_message if understand else thinking
     for key in data:
         if any(text in input_message for text in data[key]):
             if key == "greet":
@@ -186,6 +190,11 @@ while running:
                     thinking = wikipedia.summary(key_word, sentences=1)
                 except Exception:
                     thinking = "tôi không thấy gì"
+            elif key == "order":
+                if data[key][0] in input_message:
+                    myArduino.transfer_data('output', 'led', 0.5)
+                if data[key][0] in input_message:
+                    myArduino.transfer_data('output', 'led', 0)
             else:
                 break
 
