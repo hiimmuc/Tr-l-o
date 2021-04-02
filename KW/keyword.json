@@ -1,0 +1,18 @@
+{
+      "temperature": "Nhiệt độ hiện tại là %s",
+      "humidity": "Độ ẩm hiện tại là %s",
+      "light": "Cường độ ánh sáng hiện tại là %s",
+      "dust": "Lượng bụi hiện tại là %s",
+      "gas": "Lượng khí kha hiện tại đang nằm ở mức %s",
+      "rain": "Hiện tại %s mưa ",
+      "day" : "Hôm nay là %s",
+      "date": "Hôm nay là ngày %s",
+      "month": "Tháng này là tháng %s",
+      "year": "Năm nay là năm %s",
+      "today": "Hôm nay là thứ %s ngày %s tháng %s năm %s",
+      "turnon" : "Đã bật %s ",
+      "turnoff" : "Đã tắt %s",
+      "up" : "Đã tăng % lên %s",
+      "down" : "Đã giảm % xuống %s",
+      "search" : "Tìm kiếm kết quả cho %s"
+}

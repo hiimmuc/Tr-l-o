@@ -1,0 +1,14 @@
+{
+  "temperature" : "nhiệt độ,nóng,lạnh",
+  "humidity": "ẩm thấp,độ ẩm",
+  "light" : "ánh sáng",
+  "dust" : "bụi",
+  "gas": "khíga,khí gas,gas",
+  "rain": "mưa",
+  "weather" : "thời tiết,tiết trời",
+  "air" : "không khí",
+  "day" : "thứ mấy",
+  "date" : "ngày bao nhiêu,ngày mấy",
+  "month" : "tháng mấy,tháng bao nhiêu",
+  "năm" : "năm bao nhiêu"
+}
