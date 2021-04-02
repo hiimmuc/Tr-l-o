@@ -1,15 +1,30 @@
+import ctypes
+import json
 import os
 import random
+import re
+import smtplib
+import sys
 import time
+import urllib
+import urllib.request as urllib2
+import webbrowser
 from datetime import date, datetime  # noqa: H301
+from time import strftime
 
+import playsound
 import requests
-import speech_recognition
+import speech_recognition as sr
 import wikipedia
 from arduinoConfig import ArduinoConfig
 from google_trans_new import google_translator as Translator  # noqa: H306
 from googlesearch import search
+from gtts import gTTS
 from requests.api import get
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
+from youtube_search import YoutubeSearch
 
 com_path = 'COM6'
 myArduino = ArduinoConfig(com_path)
@@ -118,3 +133,20 @@ def get_information(about, how):
     elif how.lower() == "port":
         myArduino.get_data_port(about)
     print("done sending")
+
+
+def read_news(queue):
+
+    params = {
+        'apiKey': '30d02d187f7140faacf9ccd27a1441ad',
+        "q": queue,
+    }
+    api_result = requests.get('http://newsapi.org/v2/top-headlines?', params)
+    api_response = api_result.json()
+    print("Tin tức")
+
+    for number, result in enumerate(api_response['articles'], start=1):
+        print(f"""Tin {number}:\nTiêu đề: {result['title']}\nTrích dẫn: {result['description']}\nLink: {result['url']}
+    """)
+        if number <= 3:
+            webbrowser.open(result['url'])

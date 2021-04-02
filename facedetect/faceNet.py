@@ -140,7 +140,7 @@ class FaceNet(object):
         print(len(save_imgs), type(save_imgs))
         # do a bit of cleanup
         if len(save_path) != 0:
-            step = 3
+            step = fps.fps() * 2
             count = 0
             for i in range(0, len(save_imgs), step):
                 cv2.imwrite(os.path.join(save_path, f"home{count}.jpg"), save_imgs[i])

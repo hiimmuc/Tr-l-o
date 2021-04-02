@@ -1,5 +1,6 @@
 import json
 
+
 def readjson(file):
     with open(file, encoding='utf-8') as f:
         return json.load(f)
@@ -43,18 +44,29 @@ def check_text(text):
     # print(f"Answer: {data[kw]}")
     return data[kw], kw
 
+
 def answer(text, data=None):
     ans, kw = check_text(text)
+    answer = str()
     if "%s" in ans:
         data = tuple(data)
-        print(f"{ans}"%data)
+        print(f"{ans}" % data)
+        answer = f"{ans}" % data
     else:
         print(f"{ans}")
-    print("Tag: ",kw)
-    print("*"*50)
+        answer = "{ans}"
+    print("Tag: ", kw)
+    # print("*" * 50)
+    return answer
 
-####test
-question = ["Hôm nay là thứ mấy", "Bây giờ đang là tháng mấy", "Bật điều hòa lên", "Ngoài trời có đang mưa không", "Tìm kiếm con mèo trên wiki"]
-ans = [["thứ 6"], [4], ["quạt"], ["có"],["con mèo trên wiki"]]
-for i, q in enumerate(question):
-    answer(q, ans[i])
+
+# # test
+# question = [
+#     "Hôm nay là thứ mấy", "Bây giờ đang là tháng mấy",
+#     "Bật điều hòa lên", "Ngoài trời có đang mưa không",
+#     "Tìm kiếm con mèo trên wiki"
+# ]
+# ans = [["thứ 6"], [4], ["quạt"], ["có"], ["con mèo trên wiki"]]
+# for i, q in enumerate(question):
+#     print(q)
+#     answer(q, ans[i])

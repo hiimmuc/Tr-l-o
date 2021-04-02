@@ -1,14 +1,20 @@
+import os
+import random
 import time
 from datetime import date, datetime
 
 import helpers
+import playsound
 import pyttsx3
 import speech_recognition
+from gtts import gTTS
+from mutagen.mp3 import MP3
 
 
 class MyAssistant():
     def __init__(self):
         super(MyAssistant, self).__init__()
+        self.language = 'vi'
         self.running = True
         self.speaker = pyttsx3.init()
         self.recorder = speech_recognition.Recognizer()
@@ -21,26 +27,34 @@ class MyAssistant():
             "greet": ["xin chào", "hello", "hi", "hai"],
             "action": ["play music", "chơi nhạc", "nhạc", "trình duyệt"],
             "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"],
+            "news": ["báo"],
             "command": ["bật", "Tắt", "tắt", "dừng"]
         }
         pass
 
     def run(self):
-        self.speak("Hello, my name is Friday, can i help u?")
+        self.speak("Xin chào, tôi là Friday, tôi có thể giúp gì?")
         while self.running:
             # khởi tạo
             thinking = "..."
             input_message = ""  # chua noi gi
-            self.speak("I'm listening")
+            self.speak("Tôi đang nghe")
             print("\nFriday: I'm listening....")
             input_message, understand = self.listen()
             input_message = input_message.lower() if understand else thinking
             for key in self.keywords:
                 if any(text in input_message for text in self.keywords[key]):
                     if key == "greet":
-                        thinking = "Hi there"
+                        time_now = int(time.strftime('%H'))
+                        shift = "sáng" if time_now < 12 else(
+                            "chiều" if time_now <= 18 else "tối")
+                        thinking = random.choice(
+                            ["Chào bạn", "xin chào", "Chào buổi " + shift])
                     elif key == "action":
-                        pass
+                        if self.keywords[key][-1] in input_message:
+                            helpers.browser()
+                        else:
+                            helpers.play_music()
                     elif key == "check":
                         if self.keywords[key][0] in input_message:
                             thinking = date.today().strftime("%d/%m/%Y")
@@ -75,6 +89,9 @@ class MyAssistant():
                         if self.keywords[key][1] in input_message:
                             helpers.send_command(('output', 'led', 0.0),
                                                  'port')
+                    elif key == "news":
+                        self.speak(text="Bạn muốn đọc về gì?")
+                        helpers.read_news(queue=self.listen()[0])
                     else:
                         break
 
@@ -88,22 +105,22 @@ class MyAssistant():
         pass
 
     def listen(self, lowercase=True):
+        ''''''
         input_message = ""
         thinking = ""
         understand = True
         with speech_recognition.Microphone() as mic:
-
             self.recorder.adjust_for_ambient_noise(mic)
-            audio = self.recorder.record(mic,
-                                         duration=3)  # listen in 3 seconds
             print("Ready!")
+            audio = self.recorder.listen(mic, phrase_time_limit=3)
+
         try:
             print("You: ", end='')
             input_message = self.recorder.recognize_google(audio,
                                                            language='vi-VN')
             print(input_message)
             understand = True
-        except Exception:  # noqa: E722
+        except Exception:
             thinking = "Tôi không hiểu bạn nói gì cả ! ..."
             understand = False
         input_message = input_message if not lowercase else input_message.lower(
@@ -112,8 +129,21 @@ class MyAssistant():
                                                                understand)
         pass
 
-    def speak(self, text):
-        thinking = helpers.convert_languages(text, 'vi', 'en')
-        self.speaker.say(thinking)
-        self.speaker.runAndWait()
+    def speak(self, text, lang='vi'):
+        thinking = text if text != '...' else "tôi chưa nghe được, vui lòng nói lại"
+        try:
+            self.tts = gTTS(text=thinking, lang='vi', slow=False)
+            self.tts.save("backup/voices.mp3")
+            voice_length = MP3("backup/voices.mp3").info.length
+            playsound.playsound("backup/voices.mp3", False)
+            helpers.wait(t=(voice_length + 0.5))
+            os.remove("backup/voices.mp3")
+
+        except Exception:
+            print("switch mode to english")
+            thinking = helpers.convert_languages(
+                text, 'vi', 'en') if lang == 'en' else text
+            if lang == 'en':
+                self.speaker.say(thinking)
+                self.speaker.runAndWait()
         pass
