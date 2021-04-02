@@ -1,0 +1,15 @@
+{
+  "temperature" : "nhiệt độ,nóng,lạnh",
+  "humidity": "ẩm thấp,độ ẩm",
+  "light" : "ánh sáng,tối,sáng",
+  "dust" : "bụi",
+  "gas": "khí ga,khí gas,gas",
+  "rain": "mưa",
+  "weather" : "thời tiết,tiết trời",
+  "air" : "không khí",
+  "turnon" : "bật,mở lên",
+  "turnoff" : "tắt,đóng",
+  "up" : "tăng",
+  "down" : "giảm,hạ",
+  "search" : "tìm kiếm,search"
+}
