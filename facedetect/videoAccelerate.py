@@ -7,6 +7,8 @@ from imutils.video import FPS
 class VideoGet:
     def __init__(self, src=0):
         self.stream = cv2.VideoCapture(src)
+        self.w = self.stream.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.h = self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT)
         (self.grabbed, self.frame) = self.stream.read()
         self.stopped = False
 
@@ -23,6 +25,10 @@ class VideoGet:
 
     def stop(self):
         self.stopped = True
+
+    def get_size(self):
+
+        return self.w, self.h
 
 
 class VideoShow:

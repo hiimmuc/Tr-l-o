@@ -23,16 +23,18 @@ class MyAssistant():
             "research": ["tìm thông tin", "hỏi"],
             "search":
             ["tìm kiếm", "kiểm tra", "google", "gu gồ", "tra cứu", "tra"],
-            "check": ["ngày", "giờ", "thời tiết"],
+            "check": ["ngày", "giờ", "thời tiết", "ngày bao nhiêu"],
             "greet": ["xin chào", "hello", "hi", "hai"],
             "action": ["play music", "chơi nhạc", "nhạc", "trình duyệt"],
             "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"],
             "news": ["báo"],
             "command": ["bật", "Tắt", "tắt", "dừng"]
+
         }
         pass
 
     def run(self):
+        print("start")
         self.speak("Xin chào, tôi là Friday, tôi có thể giúp gì?")
         while self.running:
             # khởi tạo
@@ -92,6 +94,10 @@ class MyAssistant():
                     elif key == "news":
                         self.speak(text="Bạn muốn đọc về gì?")
                         helpers.read_news(queue=self.listen()[0])
+                    elif key == "info":
+                        value = helpers.get_information('', "terminal")
+                        thinking = "đã lấy thông tin"
+                        print(value)
                     else:
                         break
 
@@ -102,6 +108,8 @@ class MyAssistant():
 
             print(f"\nFriday: {thinking}")
             self.speak(text=thinking)
+            if not self.running:
+                break
         pass
 
     def listen(self, lowercase=True):
@@ -132,7 +140,7 @@ class MyAssistant():
     def speak(self, text, lang='vi'):
         thinking = text if text != '...' else "tôi chưa nghe được, vui lòng nói lại"
         try:
-            self.tts = gTTS(text=thinking, lang='vi', slow=False)
+            self.tts = gTTS(text=thinking, lang=lang, slow=False)
             self.tts.save("backup/voices.mp3")
             voice_length = MP3("backup/voices.mp3").info.length
             playsound.playsound("backup/voices.mp3", False)
@@ -142,8 +150,7 @@ class MyAssistant():
         except Exception:
             print("switch mode to english")
             thinking = helpers.convert_languages(
-                text, 'vi', 'en') if lang == 'en' else text
-            if lang == 'en':
-                self.speaker.say(thinking)
-                self.speaker.runAndWait()
+                text, 'vi', 'en')
+            self.speaker.say(thinking)
+            self.speaker.runAndWait()
         pass

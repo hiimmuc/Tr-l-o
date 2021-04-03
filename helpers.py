@@ -26,7 +26,7 @@ from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from youtube_search import YoutubeSearch
 
-com_path = 'COM6'
+com_path = 'COM5'
 myArduino = ArduinoConfig(com_path)
 
 

@@ -42,7 +42,9 @@ def check_text(text):
     # print(f"Type: {type_text.upper()}")
     # print(f"Tag: {kw}")
     # print(f"Answer: {data[kw]}")
-    return data[kw], kw
+
+    # classification, tag, answer
+    return type_text, kw, data[kw]
 
 
 def answer(text, data=None):

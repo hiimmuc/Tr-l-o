@@ -50,10 +50,11 @@ class ArduinoConfig():
 
     def get_data_terminal(self):
         self.open_terminal()
+        self.transfer_data_terminal("get".encode())
         data = self.terminal.readline()
         decode_data = str(data.decode("utf-8"))
         values = decode_data.split(' ')
-        values = list(lambda: float(x) for x in values)
+        # values = list(lambda: float(x) for x in values)
         self.stop()
         return values
 
