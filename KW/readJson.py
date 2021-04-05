@@ -9,6 +9,37 @@ def readjson(file):
 def check_text(text):
     kw = ''
     type_text = ''
+
+    command = False
+    greeting = False
+    text = text.lower()
+    data = readjson("qcclassifi.json")
+
+    qc_list = data['command'].split(",")
+    for qc in qc_list:
+        if qc in text:
+            type_text = 'command'
+            command = True
+
+    greeting_list = data['greeting'].split(",")
+    for qc in greeting_list:
+        if qc in text:
+            type_text = 'greeting'
+            greeting = True
+
+    if command == False and greeting == False:
+        type_text = 'question'
+
+    if greeting:
+        data = readjson('greeting.json')
+        for key, value in data.items():
+            for keyword in value.split(","):
+                if keyword in text:
+                    kw = key
+
+    elif command:
+        data = readjson('command.json')
+
     text = text.lower()
     data = readjson("qcclassifi.json")
     qc_list = data['question'].split(",")
@@ -27,18 +58,50 @@ def check_text(text):
 
     if question:
         data = readjson('quetion.json')
+
         for key, value in data.items():
             for keyword in value.split(","):
                 if keyword in text:
                     kw = key
+
+
+    else:
+        data = readjson('quetion.json')
+
     else:
         data = readjson('command.json')
+
         for key, value in data.items():
             for keyword in value.split(","):
                 if keyword in text:
                     kw = key
 
     data = readjson("keyword.json")
+
+    print(f"Type: {type_text.upper()}")
+    print(f"Tag: {kw}")
+    print(f"Answer: {data[kw]}")
+    print("*" * 50)
+    return data[kw], kw
+
+
+# def answer(text, data=None):
+#     ans, kw = check_text(text)
+#     if "%s" in ans:
+#         data = tuple(data)
+#         print(f"{ans}"%data)
+#     else:
+#         print(f"{ans}")
+#     print("Tag: ",kw)
+#     print("*"*50)
+
+####test
+question = ["Hôm nay là thứ mấy", "Bây giờ đang là tháng mấy", "Xin chào Friday",
+            "Ngoài trời có đang mưa không", "Tìm kiếm con mèo trên wiki", "Hôm nay có nóng không", "bật điều hòa lên", ]
+# ans = [["thứ 6"], [4], ["quạt"], ["có"],["con mèo trên wiki"]]
+for i, q in enumerate(question):
+    check_text(q)
+
     # print(f"Type: {type_text.upper()}")
     # print(f"Tag: {kw}")
     # print(f"Answer: {data[kw]}")
@@ -72,5 +135,6 @@ def make_answer(text, data=None):
 # ans = [["thứ 6"], [4], ["quạt"], ["có"], ["con mèo trên wiki"]]
 # for i, q in enumerate(question):
 #     print(q)
-#     answer(q, ans[i])
+
 print(check_text("cho tôi biết thời tiết hôm nay"))
+

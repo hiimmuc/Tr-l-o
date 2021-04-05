@@ -1,4 +1,9 @@
 {
+
+  "turnon" : "mở lên,mở,bật",
+  "turnoff" : "tắt"
+}
+
   "temperature" : "nhiệt độ,nóng,lạnh",
   "humidity": "ẩm thấp,độ ẩm",
   "light" : "ánh sáng,tối,sáng",
@@ -13,3 +18,4 @@
   "down" : "giảm,hạ",
   "search" : "tìm kiếm,search"
 }
+
