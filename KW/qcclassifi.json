@@ -1,4 +1,9 @@
 {
+
+  "greeting" : "chào,chào bạn,chào friday,hello,tạm biệt,bye,bai,tôi hài lòng,kết thúc",
+  "command" : "bật,tắt,mở"
+
   "question": "bao nhiêu,thế nào,ra sao,khi nào,mấy",
   "lastword": "không,hả,sao,thế,vậy"
+
 }
