@@ -20,8 +20,8 @@ class Solution():
         weight_path = r"keras-facenet/weights/facenet_keras_weights.h5"
         filepath = r'dataset/boss'
 
-        prototxtPath = r"backup\deploy.prototxt"
-        weightsPath = r"backup\res10_300x300_ssd_iter_140000.caffemodel"
+        prototxtPath = r"backup/deploy.prototxt"
+        weightsPath = r"backup/res10_300x300_ssd_iter_140000.caffemodel"
 
         self.model = FaceNet(prototxt_path=prototxtPath,
                              weights_path=weightsPath)
@@ -83,5 +83,5 @@ class Solution():
         pass
 
 
-# sol = Solution(r'dataset/faces-embeddings.npz')
-# sol.run()
+sol = Solution(r'dataset/faces-embeddings.npz')
+sol.run()

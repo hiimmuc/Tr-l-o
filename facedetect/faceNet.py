@@ -1,4 +1,5 @@
 # import the necessary packages
+import glob
 import os
 import time
 
@@ -70,29 +71,44 @@ class FaceNet(object):
                 # display the label and bounding box rectangle on the output
                 # frame
                 color = (0, 255, 0)
-                cv2.putText(frame, "face", (startX, startY - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 1, lineType=cv2.LINE_AA)
+                cv2.putText(frame,
+                            "face", (startX, startY - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6,
+                            color,
+                            1,
+                            lineType=cv2.LINE_AA)
                 cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
         return frame, faces, locs
 
-    def video_test(self):
+    def get_video(self,
+                  user_name,
+                  source=0,
+                  save_loc=r'./save_vid',
+                  detect=False):
         # initialize the video stream
-
+        file_name = os.path.join(save_loc, f'{user_name}.avi')
+        if os.path.exists(file_name):
+            os.remove(file_name)
         print("[INFO] starting video stream...")
 
         # stream = cv2.VideoCapture(source)
         vid_get = VideoGet(source).start()
+        fourcc = cv2.VideoWriter_fourcc('X', 'V', 'I', 'D')
+        writer = cv2.VideoWriter(file_name, fourcc, 150.0, (640, 480))
         fps = FPS().start()
         # loop over the frames from the video stream
         while True:
             frame = vid_get.frame
             grab = vid_get.grabbed
             if grab:
-                frame, _, _ = self.detector(frame, crop_scale=0.05)
+                if detect:
+                    frame, _, _ = self.detector(frame, crop_scale=0.05)
 
                 # show the output frame
                 cv2.imshow("Frame", frame)
+                writer.write(frame)
                 fps.update()
 
                 # if the `q` key was pressed, break from the loop
@@ -100,60 +116,70 @@ class FaceNet(object):
                 break
 
         fps.stop()
+        vid_get.stop()
         print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
         print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
-        # stream.release()
+        writer.release()
         cv2.destroyAllWindows()
 
     def extractFromVid(self, source=0, save_path=""):
         # initialize the video stream
 
         print("[INFO] starting video stream...")
-
+        if source != 0:
+            videos = glob.glob(os.path.join(source, '*.avi'))
+        videos = source if source == 0 else videos
         save_imgs = []
+        exist_name = os.listdir(save_path)
+        for vid in videos:
+            if any(name in vid for name in exist_name):
+                print('da co ten')
+                continue
+            stream = cv2.VideoCapture(vid)
 
-        stream = cv2.VideoCapture(source)
+            fps = FPS().start()
+            # loop over the frames from the video stream
+            while True:
+                ret, frame = stream.read()
+                if ret:
+                    frame, faces, _ = self.detector(frame,
+                                                    confidence_base=0.5,
+                                                    crop_scale=0.05)
+                    for face in faces:
+                        save_imgs.append(face)
+                    # show the output frame
+                    cv2.imshow("Frame", frame)
+                    fps.update()
 
-        fps = FPS().start()
-        # loop over the frames from the video stream
-        while True:
-            ret, frame = stream.read()
-            if ret:
-                frame, faces, _ = self.detector(frame, confidence_base=0.5, crop_scale=0.05)
-                for face in faces:
-                    save_imgs.append(face)
-                # show the output frame
-                cv2.imshow("Frame", frame)
-                fps.update()
+                    # if the `q` key was pressed, break from the loop
+                if cv2.waitKey(1) == 27 or not ret:
+                    break
 
-                # if the `q` key was pressed, break from the loop
-            if cv2.waitKey(1) == 27 or not ret:
-                break
+            fps.stop()
+            print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+            print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
-        fps.stop()
-        print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-
-        stream.release()
-        cv2.destroyAllWindows()
-        print(len(save_imgs), type(save_imgs))
-        # do a bit of cleanup
-        if len(save_path) != 0:
-            step = 3
-            count = 0
-            for i in range(0, len(save_imgs), step):
-                cv2.imwrite(os.path.join(save_path, f"home{count}.jpg"), save_imgs[i])
-                count += 1
-            print(f"DONE saving faces: {len(os.listdir(save_path))}")
-        pass
+            stream.release()
+            cv2.destroyAllWindows()
+            print(len(save_imgs), type(save_imgs))
+            # do a bit of cleanup
+            if len(save_path) != 0:
+                step = int(fps.fps() * 2)
+                step = step if (step > 0) else 5
+                count = 0
+                for i in range(0, len(save_imgs), step):
+                    cv2.imwrite(os.path.join(save_path, f"home{count}.jpg"),
+                                save_imgs[i])
+                    count += 1
+                print(f"DONE saving faces: {len(os.listdir(save_path))}")
+            pass
 
 
 # # load our serialized face detector model from disk
 # prototxtPath = r"backup\deploy.prototxt"
 # weightsPath = r"backup\res10_300x300_ssd_iter_140000.caffemodel"
 
-
 # model = FaceNet(prototxt_path=prototxtPath, weights_path=weightsPath)
 # model.creat_net()
-# model.extractFromVid(source=r"dataset/Nam.mp4", save_path=r"dataset/boss")
+# model.extractFromVid(source=r"./save_vid", save_path=r"dataset/boss")

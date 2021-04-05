@@ -1,5 +1,9 @@
 {
+
   "temperature" : "nhiệt độ,nóng,lạnh",
+
+  "temperature" : "nhiệt độ,nóng,lạnh",
+
   "humidity": "ẩm thấp,độ ẩm",
   "light" : "ánh sáng",
   "dust" : "bụi",
@@ -10,7 +14,11 @@
   "day" : "thứ mấy",
   "date" : "ngày bao nhiêu,ngày mấy",
   "month" : "tháng mấy,tháng bao nhiêu",
+
   "năm" : "năm bao nhiêu",
   "thời tiết" : "thời tiết, trời thế nào",
   "search" : "search, sớt, tìm kiếm, tìm thông tin, wiki"
+
+  "năm" : "năm bao nhiêu"
+
 }
