@@ -107,11 +107,12 @@ for i, q in enumerate(question):
     # print(f"Answer: {data[kw]}")
 
     # classification, tag, answer
+    print(type_text, kw)
     return type_text, kw, data[kw]
 
 
-def answer(text, data=None):
-    ans, kw = check_text(text)
+def make_answer(text, data=None):
+    _, kw, ans = check_text(text)
     answer = str()
     if "%s" in ans:
         data = tuple(data)
@@ -134,5 +135,6 @@ def answer(text, data=None):
 # ans = [["thứ 6"], [4], ["quạt"], ["có"], ["con mèo trên wiki"]]
 # for i, q in enumerate(question):
 #     print(q)
-#     answer(q, ans[i])
+
+print(check_text("cho tôi biết thời tiết hôm nay"))
 

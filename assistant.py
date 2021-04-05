@@ -1,105 +1,110 @@
 import os
 import random
-import time
-from datetime import date, datetime
 
-import helpers
 import playsound
 import pyttsx3
 import speech_recognition
 from gtts import gTTS
+from helpers import tools
 from mutagen.mp3 import MP3
 
 
 class MyAssistant():
     def __init__(self):
         super(MyAssistant, self).__init__()
+        self.helpers = tools()
         self.language = 'vi'
         self.running = True
         self.speaker = pyttsx3.init()
         self.recorder = speech_recognition.Recognizer()
         self.keywords = {
-            "info": ["nhiệt độ", "độ ẩm", "mưa"],
+            "info": ["nhiệt độ", "độ ẩm", "lượng mưa", "ánh sáng"],
             "research": ["tìm thông tin", "hỏi"],
             "search":
             ["tìm kiếm", "kiểm tra", "google", "gu gồ", "tra cứu", "tra"],
-            "check": ["ngày", "giờ", "thời tiết", "ngày bao nhiêu"],
-            "greet": ["xin chào", "hello", "hi", "hai"],
+            "check": ["ngày bao nhiêu", "mấy giờ", "thời tiết"],
+            "greet": ["xin chào", "hello"],
             "action": ["play music", "chơi nhạc", "nhạc", "trình duyệt"],
             "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"],
             "news": ["báo"],
             "command": ["bật", "Tắt", "tắt", "dừng"]
-
+        }
+        self.aspect = {
+            "nhiệt độ": 'temperature',
+            "độ ẩm": 'humidity',
+            "mưa": 'rain'
         }
         pass
 
     def run(self):
-        print("start")
+        print("Xin chào, tôi là Friday, tôi có thể giúp gì?")
         self.speak("Xin chào, tôi là Friday, tôi có thể giúp gì?")
         while self.running:
             # khởi tạo
             thinking = "..."
-            input_message = ""  # chua noi gi
+            input_message = ""
             self.speak("Tôi đang nghe")
-            print("\nFriday: I'm listening....")
+            print("\nFriday: Tôi đang nghe ...")
             input_message, understand = self.listen()
-            input_message = input_message.lower() if understand else thinking
+            input_message = input_message if understand else thinking
             for key in self.keywords:
-                if any(text in input_message for text in self.keywords[key]):
+                if any(text in input_message.lower() for text in self.keywords[key]):
                     if key == "greet":
-                        time_now = int(time.strftime('%H'))
-                        shift = "sáng" if time_now < 12 else(
-                            "chiều" if time_now <= 18 else "tối")
+                        calendar_now = self.helpers.calendar()
+                        shift = calendar_now[0]
                         thinking = random.choice(
                             ["Chào bạn", "xin chào", "Chào buổi " + shift])
                     elif key == "action":
                         if self.keywords[key][-1] in input_message:
-                            helpers.browser()
+                            self.helpers.open_application('browser')
                         else:
-                            helpers.play_music()
+                            self.helpers.play_music()
                     elif key == "check":
+                        calendar_now = self.helpers.calendar()
                         if self.keywords[key][0] in input_message:
-                            thinking = date.today().strftime("%d/%m/%Y")
+                            thinking = calendar_now[1]
                         elif self.keywords[key][1] in input_message:
-                            thinking = datetime.now().strftime("%H:%M:%S")
+                            thinking = calendar_now[2]
                         elif self.keywords[key][2] in input_message:
-                            print("\nFriday: Tên thành phố cần tìm...")
-                            self.speak("Tên thành phố cần tìm")
-                            city, _ = self.listen(False)
-                            thinking = helpers.weather(city_name=city)
+                            city = self.get_target(input_message, key)
+                            thinking = self.helpers.weather_outdoor(
+                                city_name=city)
                     elif key == "search":
-                        print("\nFriday: " + "Bạn muốn tìm gì")
-                        self.speak("Bạn muốn tìm gì")
-                        key, _ = self.listen()
-                        if helpers.gg_search(key):
+                        kw = self.get_target(input_message, key)
+                        if self.helpers.gg_search(kw):
                             thinking = "tôi tìm thấy cái này"
                         else:
                             thinking = "tôi không thấy gì vè nó cả"
                         pass
                     elif key == "research":
-                        print("\nFriday: " + "Bạn muốn gì")
-                        self.speak("Bạn muốn gì")
-                        key_word, _ = self.listen()
+                        key_word = self.get_target(input_message, key)
                         try:
-                            thinking = helpers.wiki(key_word)
+                            thinking = self.helpers.wiki(key_word)
                         except Exception:
                             thinking = "tôi không thấy gì"
-                    elif key == "command":
-                        if self.keywords[key][0] in input_message:
-                            helpers.send_command(('output', 'led', 0.2),
-                                                 'port')
-                        if self.keywords[key][1] in input_message:
-                            helpers.send_command(('output', 'led', 0.0),
-                                                 'port')
                     elif key == "news":
-                        self.speak(text="Bạn muốn đọc về gì?")
-                        helpers.read_news(queue=self.listen()[0])
+                        about = self.get_target(input_message, key)
+                        self.helpers.read_news(about)
                     elif key == "info":
-                        value = helpers.get_information('', "terminal")
-                        thinking = "đã lấy thông tin"
+                        for about in self.keywords["info"]:
+                            if about in input_message:
+                                try:
+                                    what = self.aspect[about]
+                                except Exception:
+                                    what = ""
+                        value = self.helpers.weather_indoor(what)
+                        thinking = about + " hiện giờ là " + value
                         print(value)
+                    elif key == 'command':
+                        state = 'on' if self.keywords[key][
+                            0] in input_message else 'off'
+                        if 'đèn' in input_message:
+                            self.helpers.send_command(['led', state])
+                        if 'quạt' in input_message:
+                            self.helpers.send_command(['fan', state])
+                        pass
                     else:
-                        break
+                        continue
 
             if any(text in input_message
                    for text in self.keywords["bye"]) or not self.running:
@@ -108,9 +113,30 @@ class MyAssistant():
 
             print(f"\nFriday: {thinking}")
             self.speak(text=thinking)
-            if not self.running:
-                break
         pass
+
+    def get_target(self, input_message, aspect):
+        got_it = False
+        kw = ""
+        if aspect == 'check':
+            signs = ['ở', 'tại']
+            for sign in signs:
+                if sign in input_message:
+                    kw = input_message[input_message.rfind(sign) + len(sign):]
+                    if kw.strip() == '':
+                        print("\nFriday: Tên thành phố cần tìm...")
+                        self.speak("Tên thành phố cần tìm")
+                        kw, _ = self.listen(False)
+        if aspect in ['search', 'research', 'news']:
+            if "về" in input_message:
+                kw = input_message[input_message.rfind("về") + 2:]
+                if kw.strip() != '':
+                    got_it = True
+            elif ("về" not in input_message) or (not got_it):
+                print("\nFriday: " + "Bạn muốn tìm gì")
+                self.speak("Bạn muốn tìm gì")
+                kw, _ = self.listen()
+        return kw
 
     def listen(self, lowercase=True):
         ''''''
@@ -118,12 +144,11 @@ class MyAssistant():
         thinking = ""
         understand = True
         with speech_recognition.Microphone() as mic:
+            print("You:", end='')
             self.recorder.adjust_for_ambient_noise(mic)
-            print("Ready!")
-            audio = self.recorder.listen(mic, phrase_time_limit=3)
-
+            print("->> ", end='')
+            audio = self.recorder.listen(mic, phrase_time_limit=4)
         try:
-            print("You: ", end='')
             input_message = self.recorder.recognize_google(audio,
                                                            language='vi-VN')
             print(input_message)
@@ -138,19 +163,22 @@ class MyAssistant():
         pass
 
     def speak(self, text, lang='vi'):
-        thinking = text if text != '...' else "tôi chưa nghe được, vui lòng nói lại"
+        thinking = text if text != '...' else "tôi không nghe rõ, vui lòng nói lại"
         try:
             self.tts = gTTS(text=thinking, lang=lang, slow=False)
             self.tts.save("backup/voices.mp3")
             voice_length = MP3("backup/voices.mp3").info.length
             playsound.playsound("backup/voices.mp3", False)
-            helpers.wait(t=(voice_length + 0.5))
+            self.helpers.wait(t=(voice_length + 0.5))
             os.remove("backup/voices.mp3")
 
         except Exception:
             print("switch mode to english")
-            thinking = helpers.convert_languages(
-                text, 'vi', 'en')
+            thinking = self.helpers.convert_languages(text, 'vi', 'en')
             self.speaker.say(thinking)
             self.speaker.runAndWait()
         pass
+
+
+friday = MyAssistant()
+friday.run()
