@@ -8,6 +8,7 @@ class ArduinoConfig():
         super(ArduinoConfig, self).__init__()
         self.com = com
         self.available = True
+        self.msg = "x: get\n"
         try:
             self.terminal = serial.Serial(self.com, baudrate=9600)
         except Exception:
@@ -22,24 +23,28 @@ class ArduinoConfig():
             except ValueError:
                 return False
         if self.available:
-            self.send_data("x: get")
+            self.send_data(self.msg)
             data = ""
             decode_data = " "
             t = time.time()
             cont = False
             while True:
-                data = self.terminal.readline()
-                decode_data = str(data.decode("utf-8"))
-                print(decode_data)
-                if "y:" in decode_data or cont:
-                    print('Receive: ' + decode_data)
-                    break
-                elif (time.time() - t >= 15):  # count 10s, if no response set time out
-                    print('[INFO] Timeout...')
-                    break
-                else:
-                    self.delay(3)
-                    self.send_data("x: get")
+                print('start reading...')
+                # self.delay(2)
+                try:
+                    data = self.terminal.readline()
+                    decode_data = str(data.decode("utf-8"))
+                    print(decode_data)
+                    if "y:" in decode_data or cont:
+                        print('Receive: ' + decode_data)
+                        break
+                    elif (time.time() - t >= 10):  # count 10s, if no response set time out
+                        print('[INFO] Timeout...')
+                        break
+                    else:
+                        self.send_data(self.msg)
+                except Exception:
+                    self.send_data(self.msg)
             values = list(decode_data[3:].split(' '))
             try:
                 values = list(map(lambda x: None if not is_float(x) else float(x), values))

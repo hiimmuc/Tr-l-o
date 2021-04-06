@@ -63,11 +63,6 @@ def check_text(text):
             for keyword in value.split(","):
                 if keyword in text:
                     kw = key
-
-
-    else:
-        data = readjson('quetion.json')
-
     else:
         data = readjson('command.json')
 
@@ -95,20 +90,20 @@ def check_text(text):
 #     print("Tag: ",kw)
 #     print("*"*50)
 
-####test
+# test
 question = ["Hôm nay là thứ mấy", "Bây giờ đang là tháng mấy", "Xin chào Friday",
             "Ngoài trời có đang mưa không", "Tìm kiếm con mèo trên wiki", "Hôm nay có nóng không", "bật điều hòa lên", ]
 # ans = [["thứ 6"], [4], ["quạt"], ["có"],["con mèo trên wiki"]]
-for i, q in enumerate(question):
-    check_text(q)
+# for i, q in enumerate(question):
+#     check_text(q)
 
-    # print(f"Type: {type_text.upper()}")
-    # print(f"Tag: {kw}")
-    # print(f"Answer: {data[kw]}")
+#     # print(f"Type: {type_text.upper()}")
+#     # print(f"Tag: {kw}")
+#     # print(f"Answer: {data[kw]}")
 
-    # classification, tag, answer
-    print(type_text, kw)
-    return type_text, kw, data[kw]
+#     # classification, tag, answer
+#     print(type_text, kw)
+#     return type_text, kw, data[kw]
 
 
 def make_answer(text, data=None):
@@ -137,4 +132,3 @@ def make_answer(text, data=None):
 #     print(q)
 
 print(check_text("cho tôi biết thời tiết hôm nay"))
-

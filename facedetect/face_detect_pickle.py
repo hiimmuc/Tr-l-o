@@ -1,10 +1,11 @@
-import cv2
-import numpy as np
-import face_recognition
 import os
 import pickle
-from threading import Thread
 import time
+from threading import Thread
+
+import cv2
+import face_recognition
+import numpy as np
 
 path = 'dataset/boss'
 className = []
@@ -13,7 +14,7 @@ directory = os.listdir(path)
 
 def findEndcodings():
     encodeList = []
-    for pickleFile in os.listdir("dataset/pickleFile"):
+    for pickleFile in os.listdir(r"dataset/pickleFile"):
         with open(f"dataset/pickleFile/{pickleFile}", "rb") as f:
             data = pickle.load(f)
             encodeList += data
@@ -22,15 +23,15 @@ def findEndcodings():
     return encodeList
 
 
-endcodeListKnown = findEndcodings()
-print(len(className))
-print(len(endcodeListKnown))
+# print(len(className))
+# print(len(endcodeListKnown))
 
 
 def face_check():
     cap = cv2.VideoCapture(0)
     scale = 0.2
     unscale = int(1 / scale)
+    endcodeListKnown = findEndcodings()
 
     while True:
         start = time.time()

@@ -1,9 +1,10 @@
-import cv2
-import numpy as np
-import face_recognition
 import os
-import time
 import pickle
+import time
+
+import cv2
+import face_recognition
+import numpy as np
 
 path = 'dataset/boss'
 className = []
@@ -21,7 +22,7 @@ for boss in os.listdir(path):
         images.append(curImg)
         count += 1
         if count >= 20:
-                break
+            break
     encodeList = []
     for img in images:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

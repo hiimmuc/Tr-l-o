@@ -1,29 +1,14 @@
-import ctypes
-import json
 import os
 import random
-import re
-import smtplib
-import sys
 import time
-import urllib
-import urllib.request as urllib2
 import webbrowser
-from datetime import date, datetime  # noqa: H301
-from time import strftime
+from datetime import date, datetime
 
 import googlesearch
-import playsound
 import requests
-import speech_recognition as sr
 import wikipedia
 from arduinoConfig import ArduinoConfig
 from google_trans_new import google_translator as Translator
-from gtts import gTTS
-from requests.api import get
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from youtube_search import YoutubeSearch
 
 
@@ -32,13 +17,11 @@ class tools():
         super(tools, self).__init__()
         wikipedia.set_lang('vi')
         try:
-            self.com_path = 'COM5'
+            self.com_path = 'COM6'
             self.myArduino = ArduinoConfig(self.com_path)
         except Exception:
             print('com error')
             pass
-
-        # self.driver = webdriver.Edge(EdgeChromiumDriverManager().install())
 
     def wait(self, t=1):
         time.sleep(t)
@@ -49,7 +32,7 @@ class tools():
             translator = Translator()
             script = translator.translate(txt, lang_src=src, lang_tgt=dest)
             return script
-        except Exception:  # noqa: E722, H201
+        except Exception:
             return ""
 
     def calendar(self):
@@ -71,17 +54,14 @@ class tools():
                                            'en').replace(' ', '').lower()
         if data["cod"] != "404":
             data_table = data["main"]
-            current_temperature = f"{data_table['temp'] - 273.15} Celcius degree"
+            current_temperature = data_table['temp'] - 273.15
             current_pressure = data_table["pressure"]
             current_humidity = data_table["humidity"]
             some_text = data["weather"]
             weather_description = some_text[0]["description"]
             weather_description = self.convert_languages(
                 weather_description, 'en', 'vi')
-            thinking = f"Hiện đang có {weather_description}, \n\
-            Nhiệt độ là {current_temperature}, \n\
-            Độ ẩm là {current_humidity}, \n\
-            Áp suất là {current_pressure}"
+            thinking = f"Hiện đang có {weather_description}, \n Nhiệt độ là {current_temperature} độ C, \n Độ ẩm là {current_humidity} %, \n Áp suất là {current_pressure} héc tơ Pascal"
         else:
             thinking = "không thấy thông tin, chuyển sang dùng google"
             kw = "Thời tiết tại" + city_name
@@ -90,17 +70,19 @@ class tools():
         return thinking
 
     def gg_search(self, key):
+        '''search top 5 results with browser'''
         try:
             for i, url in enumerate(
-                    googlesearch.search(key, num=15, stop=15, pause=1)):
+                    googlesearch.search(key, num=5, stop=5, pause=1)):
                 print(f"{i+1}-> {url}")
+                webbrowser.open(str(url))
             return True
-        except Exception:  # noqa: E722
+        except Exception:
             return False
         pass
 
     def read_news(self, what):
-
+        '''read news abuot somthing'''
         params = {
             'apiKey': '30d02d187f7140faacf9ccd27a1441ad',
             "q": what,
@@ -122,6 +104,7 @@ class tools():
 
     #  communicate with serial
     def send_command(self, command):
+        # send command to control devices
         msg = "x:"
         for c in command:
             msg += (' ' + c)
@@ -142,16 +125,27 @@ class tools():
         pass
 
     def open_application(self, what):
+        '''open application'''
         if what in ['browser', "trình duyệt", "trình tìm kiếm"]:
             path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
         elif what == 'word':
             path = r"pathtoword"
-        elif what == 'youtube':
+        elif what == 'excel':
             path = r"pathtoword"
         os.startfile(path)
         pass
 
+    def youtube(self, what):
+        '''play youtube video'''
+        while True:
+            result = YoutubeSearch(what, max_results=10).to_dict()
+            if result:
+                break
+        url = 'https://www.youtube.com' + result[0]['channel_link']
+        webbrowser.open(url)
+
     def play_music(self, name=None, number=None):
+        '''play music in pc'''
         music_path = r"F:\Musics\US-UK"
         songs = os.listdir(music_path)
         if not name and not number:

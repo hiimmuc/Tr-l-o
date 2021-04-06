@@ -3,6 +3,8 @@ import re
 import time
 from datetime import date, datetime  # noqa: H301
 
+from google_trans_new import google_translator as Translator
+
 
 def calendar():
     time_now = int(time.strftime('%H'))
@@ -20,10 +22,8 @@ def check(element):
         return True
 
 
-input_message = "tắt giúp tôi led"
-key_words = {"command": ["bật", "Tắt", "tắt", "dừng"]}
-state = 'on' if key_words["command"][0] in input_message else 'off'
-if any(x in input_message for x in ['đèn', 'led']):
-    print('x: ' + 'led ' + state)
-if 'quạt' in input_message:
-    print("x: " + 'fan ' + state)
+translator = Translator()
+input_message = "thời tiết ở hà nội"
+kw = input_message[input_message.rfind('ở') + len('ở'):]
+script = translator.translate(kw, lang_src='vi', lang_tgt='en')
+print(script)

@@ -19,8 +19,8 @@
      <rect>
       <x>240</x>
       <y>130</y>
-      <width>311</width>
-      <height>221</height>
+      <width>361</width>
+      <height>241</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -30,7 +30,10 @@
      <enum>QFrame::Box</enum>
     </property>
     <property name="text">
-     <string>webcam -&gt; pic of mic</string>
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>virtual-assistant.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -41,7 +44,7 @@
      <rect>
       <x>40</x>
       <y>130</y>
-      <width>131</width>
+      <width>101</width>
       <height>91</height>
      </rect>
     </property>
@@ -49,7 +52,10 @@
      <enum>QFrame::Box</enum>
     </property>
     <property name="text">
-     <string>verify</string>
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>Question-mark-face.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -64,11 +70,14 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
     </property>
     <property name="text">
-     <string>title</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Virtual assistant&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -96,7 +105,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>650</x>
       <y>130</y>
       <width>141</width>
       <height>221</height>
@@ -107,6 +116,51 @@
     </property>
     <property name="text">
      <string>tracking devices</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>230</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="text">
+     <string>user</string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>290</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>start</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>340</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>stop</string>
     </property>
    </widget>
   </widget>
