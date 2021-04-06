@@ -23,6 +23,9 @@ class tools():
             print('com error')
             pass
 
+    def stop_arduino(self):
+        self.myArduino.stop()
+
     def wait(self, t=1):
         time.sleep(t)
 
@@ -46,34 +49,36 @@ class tools():
 
     def weather_outdoor(self, city_name):
         '''get the weather information online from accuweather api'''
-        api = "330ff11e86b5ccbeba0a2f71aab88014"
-        url = f"http://api.openweathermap.org/data/2.5/weather?appid={api}&q={city_name}"
-        response = requests.get(url)
-        data = response.json()
-        city_name = self.convert_languages(city_name, 'vi',
-                                           'en').replace(' ', '').lower()
-        if data["cod"] != "404":
-            data_table = data["main"]
-            current_temperature = data_table['temp'] - 273.15
-            current_pressure = data_table["pressure"]
-            current_humidity = data_table["humidity"]
-            some_text = data["weather"]
-            weather_description = some_text[0]["description"]
-            weather_description = self.convert_languages(
-                weather_description, 'en', 'vi')
-            thinking = f"Hiện đang có {weather_description}, \n Nhiệt độ là {current_temperature} độ C, \n Độ ẩm là {current_humidity} %, \n Áp suất là {current_pressure} héc tơ Pascal"
-        else:
+        try:
+            api = "330ff11e86b5ccbeba0a2f71aab88014"
+            city_name = self.convert_languages(city_name, 'vi',
+                                               'en').replace(' ', '').lower()
+            url = f"http://api.openweathermap.org/data/2.5/weather?appid={api}&q={city_name}"
+            response = requests.get(url)
+            data = response.json()
+
+            if data["cod"] != "404":
+                data_table = data["main"]
+                current_temperature = data_table['temp'] - 273.15
+                current_pressure = data_table["pressure"]
+                current_humidity = data_table["humidity"]
+                some_text = data["weather"]
+                weather_description = some_text[0]["description"]
+                weather_description = self.convert_languages(
+                    weather_description, 'en', 'vi')
+                thinking = f"Hiện đang có {weather_description}, \n Nhiệt độ là {current_temperature} độ C, \n Độ ẩm là {current_humidity} %, \n Áp suất là {current_pressure} héc tơ Pascal"
+        except Exception:
             thinking = "không thấy thông tin, chuyển sang dùng google"
             kw = "Thời tiết tại" + city_name
-            self.gg_search(kw)
+            self.gg_search(kw, max_results=1)
 
         return thinking
 
-    def gg_search(self, key):
+    def gg_search(self, key, max_results=5):
         '''search top 5 results with browser'''
         try:
             for i, url in enumerate(
-                    googlesearch.search(key, num=5, stop=5, pause=1)):
+                    googlesearch.search(key, num=max_results, stop=max_results, pause=1)):
                 print(f"{i+1}-> {url}")
                 webbrowser.open(str(url))
             return True

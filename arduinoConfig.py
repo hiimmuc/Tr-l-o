@@ -10,6 +10,8 @@ class ArduinoConfig():
         self.available = True
         self.msg = "x: get\n"
         try:
+            if serial.Serial.isOpen():
+                serial.Serial.close()
             self.terminal = serial.Serial(self.com, baudrate=9600)
         except Exception:
             self.available = False

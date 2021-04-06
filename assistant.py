@@ -18,13 +18,15 @@ class MyAssistant():
         self.speaker = pyttsx3.init()
         self.recorder = speech_recognition.Recognizer()
         self.keywords = {
-            "info": ["nhiệt độ", "độ ẩm", "lượng mưa", "ánh sáng", "bụi", "khí ga"],
+            "info":
+            ["nhiệt độ", "độ ẩm", "lượng mưa", "ánh sáng", "bụi", "khí ga"],
             "research": ["tìm thông tin", "hỏi"],
             "search":
             ["tìm kiếm", "kiểm tra", "google", "gu gồ", "tra cứu", "tra"],
             "check": ["ngày bao nhiêu", "mấy giờ", "thời tiết"],
             "greet": ["xin chào", "hello"],
-            "open": ["play music", "chơi nhạc", "nhạc", "trình duyệt", "youtube"],
+            "open":
+            ["play music", "chơi nhạc", "nhạc", "trình duyệt", "youtube"],
             "bye": ["kết thúc", "tạm biệt", "hẹn gặp lại"],
             "news": ["báo"],
             "command": ["bật", "Tắt", "tắt", "dừng"]
@@ -51,12 +53,14 @@ class MyAssistant():
             input_message, understand = self.listen()
             if understand:
                 for key in self.keywords:
-                    if any(text in input_message for text in self.keywords[key]):
+                    if any(text in input_message
+                           for text in self.keywords[key]):
                         if key == "greet":
                             calendar_now = self.helpers.calendar()
                             shift = calendar_now[0]
-                            thinking = random.choice(
-                                ["Chào bạn", "xin chào", "Chào buổi " + shift])
+                            thinking = random.choice([
+                                "Chào bạn", "xin chào", "Chào buổi " + shift
+                            ])
                         elif key == "open":
                             if self.keywords[key][-1] in input_message:
                                 self.helpers.open_application('browser')
@@ -99,7 +103,8 @@ class MyAssistant():
                                     except Exception:
                                         what = ""
                                     value = self.helpers.weather_indoor(what)
-                                    thinking = about + " hiện giờ là " + str(value)
+                                    thinking = about + " hiện giờ là " + str(
+                                        value)
 
                         elif key == 'command':
                             state = 'on' if self.keywords[key][
@@ -115,7 +120,8 @@ class MyAssistant():
                 if any(text in input_message
                        for text in self.keywords["bye"]) or not self.running:
                     thinking = "cảm ơn bạn, tạm biệt"
-                    self.running = False
+                    # self.running = False
+                    self.stop()
             else:
                 thinking = "tôi không hiểu ý bạn, hãy thử nói lại lần nữa"
             thinking = thinking if thinking != '...' else "tôi không nghe rõ, vui lòng nói lại"
@@ -133,6 +139,7 @@ class MyAssistant():
                 if sign in input_message:
                     kw = input_message[input_message.rfind(sign) + len(sign):]
                     kw = self.helpers.convert_languages(kw)
+                    print(kw)
                     if kw.strip() == '':
                         print("\nFriday: Tên thành phố cần tìm...")
                         self.speak("Tên thành phố cần tìm")
@@ -149,7 +156,7 @@ class MyAssistant():
         return kw
 
     def listen(self, lowercase=True):
-        ''''''
+        '''turn on mic'''
         input_message = ""
         thinking = "..."
         understand = True
@@ -172,8 +179,9 @@ class MyAssistant():
         pass
 
     def speak(self, text, lang='vi'):
+        '''tts and play back'''
         try:
-            self.tts = gTTS(text=thinking, lang=lang, slow=False)
+            self.tts = gTTS(text=text, lang=lang, slow=False)
             self.tts.save("backup/voices.mp3")
             voice_length = MP3("backup/voices.mp3").info.length
             playsound.playsound("backup/voices.mp3", False)
@@ -182,13 +190,14 @@ class MyAssistant():
 
         except Exception:
             print("switch mode to english")
-            thinking = self.helpers.convert_languages(text, 'vi', 'en')
+            thinking = self.helpers.convert_languages(text, lang, 'en')
             self.speaker.say(thinking)
             self.speaker.runAndWait()
         pass
 
     def stop(self):
         self.running = False
+        self.helpers.stop_arduino()
 
 
 friday = MyAssistant()
