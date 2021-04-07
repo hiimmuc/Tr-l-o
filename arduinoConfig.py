@@ -10,11 +10,16 @@ class ArduinoConfig():
         self.available = True
         self.msg = "x: get\n"
         try:
-            if serial.Serial.isOpen():
-                serial.Serial.close()
             self.terminal = serial.Serial(self.com, baudrate=9600)
         except Exception:
-            self.available = False
+            try:
+                print("[W] serial have been opened in another app, try to restart...")
+                self.terminal.close()
+                self.terminal.open()
+                print("[I] done restarting")
+            except Exception:
+                print("[E] can not restart serial, please close all relating app")
+                self.available = False
 
     def get_data(self):
         '''send signal to arduino and get the line of value'''
@@ -55,7 +60,7 @@ class ArduinoConfig():
 
             return values[:6]
         else:
-            return 'Error'
+            return ['nan'] * 6
 
     def send_data(self, data):
         '''send signal to arduino'''
