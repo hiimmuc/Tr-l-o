@@ -20,7 +20,7 @@ class tools():
             self.com_path = 'COM6'
             self.myArduino = ArduinoConfig(self.com_path)
         except Exception:
-            print('com error')
+            print('[I] Com error')
             pass
 
     def stop_arduino(self):

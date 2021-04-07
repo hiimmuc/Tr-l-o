@@ -13,12 +13,12 @@ class ArduinoConfig():
             self.terminal = serial.Serial(self.com, baudrate=9600)
         except Exception:
             try:
-                print("[W] serial have been opened in another app, try to restart...")
+                print("[W] Serial have been opened in another app, try to restart...")
                 self.terminal.close()
                 self.terminal.open()
-                print("[I] done restarting")
+                print("[I] Done restarting")
             except Exception:
-                print("[E] can not restart serial, please close all relating app")
+                print("[E] Can not restart serial, please close all relating app")
                 self.available = False
 
     def get_data(self):
@@ -36,17 +36,17 @@ class ArduinoConfig():
             t = time.time()
             cont = False
             while True:
-                print('start reading...')
+                print('[I] start reading...')
                 # self.delay(2)
                 try:
                     data = self.terminal.readline()
                     decode_data = str(data.decode("utf-8"))
                     print(decode_data)
                     if "y:" in decode_data or cont:
-                        print('Receive: ' + decode_data)
+                        print('[I] Receive: ' + decode_data)
                         break
                     elif (time.time() - t >= 10):  # count 10s, if no response set time out
-                        print('[INFO] Timeout...')
+                        print('[I] Timeout...')
                         break
                     else:
                         self.send_data(self.msg)
@@ -65,7 +65,7 @@ class ArduinoConfig():
     def send_data(self, data):
         '''send signal to arduino'''
         if self.available:
-            print("Sent: " + data)
+            print("[I] Sent: " + data)
             data = bytearray(data, 'utf-8')
             self.terminal.write(data)
 
